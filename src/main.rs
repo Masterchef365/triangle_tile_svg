@@ -101,7 +101,7 @@ fn triangle_at(x: f32, y: f32, half_width: f32, height: f32, points_up: bool, co
             .line_by((half_width * 2., 0.))
     } else {
         SvgData::new()
-            .move_to((x, y - height))
+            .move_to((x, y + height))
             .line_by((-half_width, -height))
             .line_by((half_width * 2., 0.))
     }
@@ -147,7 +147,7 @@ fn load_png_rgb<R: Read>(r: R) -> Result<(usize, Vec<u8>)> {
             .collect(),
         png::ColorType::Grayscale => buf.iter().map(|&px| [px; 3]).flatten().collect(),
         png::ColorType::GrayscaleAlpha => {
-            buf.chunks_exact(2).map(|px| [px[1]; 3]).flatten().collect()
+            buf.chunks_exact(2).map(|px| [px[0]; 3]).flatten().collect()
         }
         other => bail!("Images with color type {:?} are unsupported", other),
     };

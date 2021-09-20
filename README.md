@@ -1,3 +1,3 @@
 # Triangle tile explorer
-![Rust logo](./rust.png)
+![Rust logo](./waterfall.png)
 ![Rust logo but it's triangle tiles](./out.svg)
