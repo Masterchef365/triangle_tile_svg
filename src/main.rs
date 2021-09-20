@@ -13,10 +13,41 @@ fn main() -> Result<()> {
         )
     };
     let image_path = args.next().with_context(usage)?;
-    //let image_path = args.next().with_context(usage);
+    let n_vertical_tris: usize = args
+        .next()
+        .unwrap_or("30".to_string())
+        .parse()
+        .context("# of vertical triangles")?;
+    let triangle_height: f32 = args
+        .next()
+        .unwrap_or("0.1".to_string())
+        .parse()
+        .context("Triangle height")?;
 
-    let (width, rgb_data) = load_png_from_path(image_path).context("Loading image")?;
-    let height = rgb_data.len() / (width * 3);
+    // Load image
+    let (image_width, image_data) = load_png_from_path(image_path).context("Loading image")?;
+    let image_height = image_data.len() / (image_width * 3);
+
+    // Base divided by height, so multiplying height times this amount gives you the base
+    let base_per_height: f32 = 1. / (3.0_f32).sqrt();
+    
+    // Number of triangles horizontally
+    let n_horiz_tris = image_width * n_vertical_tris / image_height;
+
+    // Half of the width of the base of a triangle. Useful for stepping along the grid
+    let half_triangle_width = triangle_height / (3.0_f32).sqrt();
+
+    // Generate triangles
+    let mut y = 0.0;
+    for row in 0..n_vertical_tris {
+        let mut x = 0.0;
+        for col in 0..n_vertical_tris {
+            let points_up = (row & 1 == 0) != (col & 1 == 0);
+            
+            x += half_triangle_width;
+        }
+        y += triangle_height;
+    }
 
     dbg!(width, height);
 
