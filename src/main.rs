@@ -33,6 +33,10 @@ fn main() -> Result<()> {
     // Load image
     let (image_width, image_data) = load_png_from_path(image_path).context("Loading image")?;
     let image_height = image_data.len() / (image_width * 3);
+    
+    if image_data.is_empty() {
+        bail!("Empty image");
+    }
 
     // Ratio of half the base of a triangle to it's height
     let sqrt_3 = (3.0_f32).sqrt();
@@ -59,9 +63,20 @@ fn main() -> Result<()> {
     for row in 0..n_vertical_tris {
         let mut x = 0.0;
         for col in 0..n_horiz_tris {
+            let img_y = ((row * image_height) / n_vertical_tris).min(image_height-1);
+            let img_x = ((col * image_width) / n_horiz_tris).min(image_width-1);
+            let img_idx = img_x + img_y * image_width;
+            let subpixel_idx = img_idx*3;
+
+            let rgb = [
+                image_data[subpixel_idx+0],
+                image_data[subpixel_idx+1],
+                image_data[subpixel_idx+2],
+            ];
+
             let points_up = (row & 1 == 0) != (col & 1 == 0);
 
-            let color = encode_color([24, 55, 132]);
+            let color = encode_color(rgb);
 
             document.append(triangle_at(x, y, half_triangle_width, triangle_height, points_up, &color));
             
@@ -90,8 +105,8 @@ fn triangle_at(x: f32, y: f32, half_width: f32, height: f32, points_up: bool, co
     .close();
 
     SvgPath::new()
-        .set("fill", "none")
-        .set("stroke", color)
+        .set("fill", color)
+        .set("stroke", "none")
         .set("stroke-width", 0.001)
         .set("d", data)
 }
@@ -129,7 +144,7 @@ fn load_png_rgb<R: Read>(r: R) -> Result<(usize, Vec<u8>)> {
             .collect(),
         png::ColorType::Grayscale => buf.iter().map(|&px| [px; 3]).flatten().collect(),
         png::ColorType::GrayscaleAlpha => {
-            buf.chunks_exact(2).map(|px| [px[0]; 3]).flatten().collect()
+            buf.chunks_exact(2).map(|px| [px[1]; 3]).flatten().collect()
         }
         other => bail!("Images with color type {:?} are unsupported", other),
     };
