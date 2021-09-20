@@ -60,7 +60,10 @@ fn main() -> Result<()> {
         let mut x = 0.0;
         for col in 0..n_horiz_tris {
             let points_up = (row & 1 == 0) != (col & 1 == 0);
-            document.append(triangle_at(x, y, half_triangle_width, triangle_height, points_up));
+
+            let color = encode_color([24, 55, 132]);
+
+            document.append(triangle_at(x, y, half_triangle_width, triangle_height, points_up, &color));
             
             x += half_triangle_width;
         }
@@ -72,7 +75,7 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-fn triangle_at(x: f32, y: f32, half_width: f32, height: f32, points_up: bool) -> SvgPath {
+fn triangle_at(x: f32, y: f32, half_width: f32, height: f32, points_up: bool, color: &str) -> SvgPath {
     let data = if points_up {
         SvgData::new()
             .move_to((x, y))
@@ -88,9 +91,13 @@ fn triangle_at(x: f32, y: f32, half_width: f32, height: f32, points_up: bool) ->
 
     SvgPath::new()
         .set("fill", "none")
-        .set("stroke", "black")
+        .set("stroke", color)
         .set("stroke-width", 0.001)
         .set("d", data)
+}
+
+fn encode_color([r, g, b]: [u8; 3]) -> String {
+    format!("#{:02X}{:02X}{:02X}", r, g, b)
 }
 
 fn load_png_from_path<P: AsRef<Path>>(path: P) -> Result<(usize, Vec<u8>)> {
