@@ -65,7 +65,7 @@ fn main() -> Result<()> {
     let mut y = 0.0;
     for row in 0..n_vertical_tris {
         let mut x = 0.0;
-        for col in 0..n_horiz_tris {
+        for col in 0..=n_horiz_tris {
             let img_y = ((row * image_height) / n_vertical_tris).min(image_height-1);
             let img_x = ((col * image_width) / n_horiz_tris).min(image_width-1);
             let img_idx = img_x + img_y * image_width;
