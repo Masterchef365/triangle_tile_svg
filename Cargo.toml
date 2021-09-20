@@ -1,0 +1,9 @@
+[package]
+name = "dont_tell_avali"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+anyhow = "1"
+svg = "0.10"
+png = "0.17"
