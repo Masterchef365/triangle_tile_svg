@@ -10,25 +10,28 @@ fn main() -> Result<()> {
     let program_name = args.next().unwrap();
     let usage = || {
         format!(
-            "Usage: {} <image path> <# vertical triangles (30)> <triangle height (0.1)>",
+            "Usage: {} <image path> <# vertical triangles (30)> <triangle height (0.1)> <out path>",
             program_name
         )
     };
 
     let image_path: PathBuf = args.next().with_context(usage)?.into();
-    //let svg_path = image_path.parent().expect("Image path has no parent").join(image_path.file_stem().
-    let svg_path = "out.svg";
 
     let n_vertical_tris: usize = args
         .next()
         .unwrap_or("30".to_string())
         .parse()
         .context("# of vertical triangles")?;
+
     let triangle_height: f32 = args
         .next()
         .unwrap_or("0.1".to_string())
         .parse()
         .context("Triangle height")?;
+
+    let svg_path = args
+        .next()
+        .unwrap_or("out.svg".to_string());
 
     // Load image
     let (image_width, image_data) = load_png_from_path(image_path).context("Loading image")?;
