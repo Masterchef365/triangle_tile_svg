@@ -34,11 +34,15 @@ fn main() -> Result<()> {
     let (image_width, image_data) = load_png_from_path(image_path).context("Loading image")?;
     let image_height = image_data.len() / (image_width * 3);
 
+    // Ratio of half the base of a triangle to it's height
+    let sqrt_3 = (3.0_f32).sqrt();
+
     // Number of triangles horizontally
     let n_horiz_tris = (image_width * n_vertical_tris) / image_height;
+    let n_horiz_tris = (n_horiz_tris as f32 * sqrt_3) as usize;
 
     // Half of the width of the base of a triangle. Useful for stepping along the grid
-    let half_triangle_width = triangle_height / (3.0_f32).sqrt();
+    let half_triangle_width = triangle_height / sqrt_3;
 
     // Generate triangles
     let mut document = svg::Document::new().set(
@@ -54,7 +58,7 @@ fn main() -> Result<()> {
     let mut y = 0.0;
     for row in 0..n_vertical_tris {
         let mut x = 0.0;
-        for col in 0..n_vertical_tris {
+        for col in 0..n_horiz_tris {
             let points_up = (row & 1 == 0) != (col & 1 == 0);
             document.append(triangle_at(x, y, half_triangle_width, triangle_height, points_up));
             
@@ -85,7 +89,7 @@ fn triangle_at(x: f32, y: f32, half_width: f32, height: f32, points_up: bool) ->
     SvgPath::new()
         .set("fill", "none")
         .set("stroke", "black")
-        .set("stroke-width", 3)
+        .set("stroke-width", 0.001)
         .set("d", data)
 }
 
